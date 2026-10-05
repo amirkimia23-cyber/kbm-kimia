@@ -1,0 +1,1169 @@
+```react
+import React, { useState, useEffect, useMemo } from 'react';
+
+// --- ICONS (Lucide SVG Icons simplified for inline use) ---
+const IconHome = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+const IconTarget = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>;
+const IconCompass = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>;
+const IconBook = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>;
+const IconLightbulb = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>;
+const IconFlask = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 3h6"/><path d="M10 3v5.48c0 .85-.34 1.67-.94 2.27l-5.63 5.63A3 3 0 0 0 5.55 21h12.9a3 3 0 0 0 2.12-5.12l-5.63-5.63a3.17 3.17 0 0 1-.94-2.27V3"/><path d="M6 14h12"/></svg>;
+const IconEdit = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>;
+const IconClipboard = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>;
+const IconMessageCircle = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>;
+const IconBarChart = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>;
+const IconAward = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>;
+const IconSun = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>;
+const IconMoon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>;
+const IconLock = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
+const IconCheck = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
+const IconArrowRight = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>;
+const IconArrowLeft = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>;
+const IconPrinter = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>;
+
+const NAVIGATION = [
+  { id: 'beranda', label: 'Beranda', icon: <IconHome /> },
+  { id: 'tujuan', label: 'Tujuan', icon: <IconTarget /> },
+  { id: 'eksplorasi', label: 'Eksplorasi', icon: <IconCompass /> },
+  { id: 'materi', label: 'Materi', icon: <IconBook /> },
+  { id: 'contoh', label: 'Contoh', icon: <IconLightbulb /> },
+  { id: 'praktik', label: 'Praktik', icon: <IconFlask /> },
+  { id: 'quiz', label: 'Quiz', icon: <IconEdit /> },
+  { id: 'lkpd', label: 'LKPD', icon: <IconClipboard /> },
+  { id: 'refleksi', label: 'Refleksi', icon: <IconMessageCircle /> },
+  { id: 'evaluasi', label: 'Evaluasi', icon: <IconBarChart /> },
+  { id: 'hasil', label: 'Hasil', icon: <IconAward /> },
+];
+
+// Helper to format chemical formulas (H2O -> H₂O, H+ -> H⁺)
+const formatChem = (text) => {
+    return <span dangerouslySetInnerHTML={{ __html: text
+        .replace(/_(\d+)/g, '<sub>$1</sub>')
+        .replace(/\^([+-\d]+)/g, '<sup>$1</sup>') 
+    }} />;
+};
+
+const INITIAL_QUIZ = [
+  { id: 1, text: "Menurut teori Arrhenius, suatu zat dikatakan asam jika...", options: ["Menerima proton", "Mendonorkan pasangan elektron", "Menghasilkan ion H^+ dalam air", "Menghasilkan ion OH^- dalam air"], correct: 2, explanation: "Teori Arrhenius mendefinisikan asam sebagai zat yang melepaskan ion H⁺ jika dilarutkan dalam air.", difficulty: "Mudah" },
+  { id: 2, text: `Tentukan pasangan asam-basa konjugasi dari reaksi berikut:<br/> NH_3 + H_2O ⇌ NH_4^+ + OH^-`, options: ["NH_3 dan H_2O", "H_2O dan NH_4^+", "NH_3 dan OH^-", "NH_3 dan NH_4^+"], correct: 3, explanation: "Basa (NH₃) menerima proton menjadi asam konjugasi (NH₄⁺).", difficulty: "Sedang" },
+  { id: 3, text: "Berapa pH larutan HCl 0,01 M?", options: ["1", "2", "3", "12"], correct: 1, explanation: "HCl adalah asam kuat. [H⁺] = 1 × 10⁻² M. pH = -log(10⁻²) = 2.", difficulty: "Mudah" },
+  { id: 4, text: "Suatu larutan diuji dengan kertas lakmus merah warnanya tetap merah, sedangkan dengan lakmus biru berubah menjadi merah. Sifat larutan tersebut adalah...", options: ["Asam", "Basa", "Netral", "Garam"], correct: 0, explanation: "Sifat asam akan memerahkan lakmus biru dan lakmus merah tetap merah.", difficulty: "Mudah" },
+  { id: 5, text: "Manakah dari kelompok senyawa berikut yang semuanya merupakan asam kuat?", options: ["HCl, HNO_3, CH_3COOH", "H_2SO_4, HCl, HNO_3", "NaOH, KOH, Ba(OH)_2", "H_3PO_4, H_2CO_3, HF"], correct: 1, explanation: "H₂SO₄, HCl, dan HNO₃ terionisasi sempurna dalam air.", difficulty: "Sedang" },
+  { id: 6, text: "Diketahui Kb NH_3 = 10^-5. Berapakah pH larutan NH_3 0,1 M?", options: ["3", "11", "9", "5"], correct: 1, explanation: "[OH⁻] = √(Kb × M) = √(10⁻⁵ × 10⁻¹) = 10⁻³. pOH = 3, maka pH = 14 - 3 = 11.", difficulty: "Sulit" },
+  { id: 7, text: "Reaksi netralisasi antara asam kuat dan basa kuat akan menghasilkan larutan dengan pH...", options: ["< 7", "> 7", "= 7", "Bisa asam atau basa"], correct: 2, explanation: "Garam yang terbentuk dari asam kuat dan basa kuat tidak terhidrolisis, sehingga pH = 7 (netral).", difficulty: "Sedang" },
+  { id: 8, text: "Pernyataan yang membedakan asam kuat pekat dengan asam lemah pekat adalah...", options: ["Asam kuat memiliki molaritas tinggi, asam lemah molaritas rendah", "Asam kuat terionisasi sempurna, asam lemah terionisasi sebagian", "Asam kuat berbahaya, asam lemah aman diminum", "Asam kuat mengubah lakmus, asam lemah tidak"], correct: 1, explanation: "Kekuatan asam ditentukan oleh derajat ionisasi (α), bukan konsentrasi (pekat/encer).", difficulty: "HOTS" },
+  { id: 9, text: "Seorang siswa mencelupkan indikator universal ke dalam air sabun dan warnanya berubah menjadi biru tua. Diperkirakan pH air sabun tersebut adalah...", options: ["2", "5", "7", "10"], correct: 3, explanation: "Air sabun bersifat basa, sehingga pH-nya > 7. Warna biru tua pada indikator universal menunjukkan pH sekitar 9-11.", difficulty: "Literasi" },
+  { id: 10, text: "Menurut G.N. Lewis, zat yang bertindak sebagai basa adalah...", options: ["Akseptor proton", "Donor proton", "Akseptor pasangan elektron", "Donor pasangan elektron"], correct: 3, explanation: "Teori Lewis mendefinisikan basa sebagai spesi yang dapat mendonorkan pasangan elektron bebas (PEB).", difficulty: "Sedang" }
+];
+
+const INITIAL_EVALUASI = [
+  { id: 1, text: "Spesi yang bertindak sebagai asam Lewis pada reaksi BF_3 + NH_3 → F_3B-NH_3 adalah...", options: ["NH_3", "BF_3", "F_3B-NH_3", "Semua salah"], correct: 1, explanation: "BF₃ menerima pasangan elektron dari NH₃, sehingga BF₃ adalah asam Lewis.", difficulty: "Sedang" },
+  { id: 2, text: "Sebanyak 100 mL larutan NaOH 0,05 M memiliki pH sebesar...", options: ["12 + log 5", "12 - log 5", "13 - log 5", "11 + log 5"], correct: 0, explanation: "[OH⁻] = 0,05 M = 5×10⁻². pOH = 2 - log 5. pH = 14 - (2 - log 5) = 12 + log 5.", difficulty: "Sulit" },
+  { id: 3, text: "Indikator fenolftalein (PP) memiliki trayek pH 8,3 – 10,0 (tak berwarna – merah muda). Jika larutan X ditetesi PP tetap tak berwarna, kesimpulan yang paling tepat adalah...", options: ["Larutan X pasti bersifat asam kuat", "pH larutan X kurang dari 8,3", "Larutan X bersifat basa lemah", "Larutan X memiliki pH 10"], correct: 1, explanation: "Tak berwarna berarti pH berada di bawah batas bawah trayek pH PP, yaitu < 8,3. Bisa asam, bisa juga sedikit basa (misal pH 7,5).", difficulty: "HOTS" },
+  { id: 4, text: "Berapa volume air yang harus ditambahkan pada 10 mL larutan HCl dengan pH = 2 agar pH-nya menjadi 3?", options: ["10 mL", "90 mL", "100 mL", "1000 mL"], correct: 1, explanation: "pH 2 -> [H⁺] = 10⁻² M. pH 3 -> [H⁺] = 10⁻³ M. V1.M1 = V2.M2 -> 10 × 10⁻² = V2 × 10⁻³ -> V2 = 100 mL. V_tambah = 100 - 10 = 90 mL.", difficulty: "HOTS" },
+  { id: 5, text: "Senyawa H_2SO_4 di dalam air dapat melepaskan dua ion H^+. Oleh karena itu, H_2SO_4 disebut sebagai asam...", options: ["Monoprotik", "Diprotik", "Triprotik", "Poliprotik"], correct: 1, explanation: "Asam diprotik adalah asam yang melepaskan dua ion hidrogen per molekulnya dalam larutan.", difficulty: "Mudah" },
+  { id: 6, text: "Larutan CH_3COOH 0,1 M (Ka = 10^-5) memiliki pH yang sama dengan larutan HCl dengan konsentrasi...", options: ["0,1 M", "0,01 M", "0,001 M", "0,0001 M"], correct: 2, explanation: "[H⁺] CH3COOH = √(10⁻⁵ × 10⁻¹) = 10⁻³. Agar pH sama, [H⁺] HCl harus 10⁻³ M. Karena HCl kuat (valensi 1), maka M HCl = 10⁻³ M = 0,001 M.", difficulty: "Sulit" },
+  { id: 7, text: "Sebuah pabrik membuang limbah cair. Saat diuji dengan ekstrak kol ungu, larutan limbah berubah menjadi hijau kekuningan. Limbah tersebut cenderung bersifat...", options: ["Asam kuat", "Asam lemah", "Netral", "Basa kuat"], correct: 3, explanation: "Kol ungu berwarna merah di lingkungan asam sangat kuat, ungu di netral, hijau di basa lemah, dan kuning kehijauan di basa kuat.", difficulty: "Literasi" },
+  { id: 8, text: "Konsep yang menjelaskan bahwa asam adalah spesi pendonor proton (H^+) dikemukakan oleh...", options: ["Arrhenius", "Bronsted-Lowry", "Lewis", "Boyle"], correct: 1, explanation: "J.N. Brønsted dan T.M. Lowry mengemukakan teori asam-basa berdasarkan serah terima proton.", difficulty: "Mudah" },
+  { id: 9, text: "Manakah yang BUKAN merupakan basa kuat?", options: ["NaOH", "KOH", "Ba(OH)_2", "NH_4OH"], correct: 3, explanation: "Amonium hidroksida (NH₄OH atau larutan amonia) terionisasi sebagian dalam air, sehingga merupakan basa lemah.", difficulty: "Mudah" },
+  { id: 10, text: "Jika 50 mL larutan HCl 0,1 M dicampurkan dengan 50 mL larutan NaOH 0,1 M, pernyataan yang benar adalah...", options: ["Terjadi reaksi menghasilkan gas", "pH campuran menjadi > 7", "Terjadi reaksi netralisasi sempurna, pH = 7", "Tersisa reaktan HCl berlebih"], correct: 2, explanation: "Mol HCl = 5 mmol, Mol NaOH = 5 mmol. Keduanya habis bereaksi (asam kuat + basa kuat) membentuk garam netral (NaCl) dan air. pH = 7.", difficulty: "Sedang" }
+];
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('beranda');
+  const [theme, setTheme] = useState('light');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [visitedTabs, setVisitedTabs] = useState(new Set(['beranda']));
+  
+  // App Data State (persisted in localStorage for client-side demo)
+  const [quizData, setQuizData] = useState(INITIAL_QUIZ);
+  const [evalData, setEvalData] = useState(INITIAL_EVALUASI);
+  
+  // User Progress Data
+  const [quizScore, setQuizScore] = useState(null);
+  const [evalScore, setEvalScore] = useState(null);
+  const [lkpdAnswers, setLkpdAnswers] = useState({});
+  const [reflectionAnswers, setReflectionAnswers] = useState({});
+  const [studentInfo, setStudentInfo] = useState({ name: '', class: '', group: '' });
+
+  // Initialize theme and local storage data
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('kimiaTheme') || 'light';
+    setTheme(savedTheme);
+    if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+
+    const savedQuiz = localStorage.getItem('kimiaQuiz');
+    if (savedQuiz) setQuizData(JSON.parse(savedQuiz));
+
+    const savedEval = localStorage.getItem('kimiaEval');
+    if (savedEval) setEvalData(JSON.parse(savedEval));
+  }, []);
+
+  // Update theme
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('kimiaTheme', newTheme);
+    if (newTheme === 'dark') document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+  };
+
+  // Handle navigation
+  const navigateTo = (tabId) => {
+    setActiveTab(tabId);
+    setVisitedTabs(prev => new Set(prev).add(tabId));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const currentIndex = NAVIGATION.findIndex(nav => nav.id === activeTab);
+  const progressPercent = Math.round((visitedTabs.size / NAVIGATION.length) * 100);
+
+  // --- SUB-COMPONENTS ---
+
+  const Header = () => (
+    <header className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <img src="https://user37617.na.imgto.link/public/20261005/1001254612.avif" alt="Logo MAN 2 Nganjuk" className="h-10 w-auto object-contain" />
+          <div className="hidden sm:block">
+            <h1 className="text-lg font-bold text-slate-800 dark:text-white leading-tight">KBM Kimia</h1>
+            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Asam Basa • MAN 2 Nganjuk</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors">
+            {theme === 'light' ? <IconMoon /> : <IconSun />}
+          </button>
+          {!isAdmin ? (
+            <button onDoubleClick={() => {
+              const pwd = prompt("Masukkan password Admin:");
+              if(pwd === "admin") setIsAdmin(true);
+            }} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-colors" title="Klik ganda untuk Admin">
+              <IconLock />
+            </button>
+          ) : (
+             <button onClick={() => setIsAdmin(false)} className="px-3 py-1 bg-red-100 text-red-600 rounded text-sm font-bold">Exit Admin</button>
+          )}
+        </div>
+      </div>
+      {/* Progress Bar */}
+      <div className="w-full h-1 bg-slate-100 dark:bg-slate-800">
+        <div className="h-full bg-emerald-500 transition-all duration-500 ease-out" style={{ width: `${progressPercent}%` }}></div>
+      </div>
+    </header>
+  );
+
+  const BottomNav = () => (
+    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 z-50 pb-safe sm:hidden">
+      <div className="flex overflow-x-auto scrollbar-hide">
+        {NAVIGATION.map((nav) => (
+          <button
+            key={nav.id}
+            onClick={() => navigateTo(nav.id)}
+            className={`flex-none w-[72px] py-3 flex flex-col items-center justify-center gap-1 transition-colors ${
+              activeTab === nav.id ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-slate-500 dark:text-slate-400 hover:text-emerald-500'
+            }`}
+          >
+            <div className={`${activeTab === nav.id ? 'bg-emerald-100 dark:bg-emerald-900/30 p-1.5 rounded-xl' : 'p-1.5'}`}>
+              {nav.icon}
+            </div>
+            <span className="text-[10px]">{nav.label}</span>
+          </button>
+        ))}
+      </div>
+    </nav>
+  );
+
+  const SideNav = () => (
+    <aside className="hidden sm:flex flex-col w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-[calc(100vh-4rem)] sticky top-16 overflow-y-auto">
+      <div className="p-4 space-y-1">
+        <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">Navigasi Pembelajaran</div>
+        {NAVIGATION.map((nav) => (
+          <button
+            key={nav.id}
+            onClick={() => navigateTo(nav.id)}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+              activeTab === nav.id 
+                ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 font-semibold shadow-sm border border-emerald-100 dark:border-emerald-800/50' 
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+            }`}
+          >
+            {nav.icon}
+            <span>{nav.label}</span>
+            {visitedTabs.has(nav.id) && activeTab !== nav.id && <span className="ml-auto text-emerald-500"><IconCheck /></span>}
+          </button>
+        ))}
+        {isAdmin && (
+            <button onClick={() => setActiveTab('admin')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all mt-4 border-t border-slate-200 dark:border-slate-700 ${activeTab === 'admin' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}>
+                <IconLock /> Admin Panel
+            </button>
+        )}
+      </div>
+      <div className="mt-auto p-4 border-t border-slate-200 dark:border-slate-800">
+         <div className="text-xs text-center text-slate-500">Progress: {progressPercent}%</div>
+      </div>
+    </aside>
+  );
+
+  const PageNavigation = () => (
+    <div className="flex justify-between items-center mt-12 pt-6 border-t border-slate-200 dark:border-slate-800">
+      <button 
+        onClick={() => currentIndex > 0 && navigateTo(NAVIGATION[currentIndex - 1].id)}
+        disabled={currentIndex === 0}
+        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${currentIndex === 0 ? 'opacity-50 cursor-not-allowed text-slate-400' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'}`}
+      >
+        <IconArrowLeft /> Sebelumnya
+      </button>
+      <button 
+        onClick={() => currentIndex < NAVIGATION.length - 1 && navigateTo(NAVIGATION[currentIndex + 1].id)}
+        disabled={currentIndex === NAVIGATION.length - 1}
+        className={`flex items-center gap-2 px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors shadow-sm shadow-emerald-200 dark:shadow-none ${currentIndex === NAVIGATION.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+      >
+        Selanjutnya <IconArrowRight />
+      </button>
+    </div>
+  );
+
+  const SectionBeranda = () => (
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="relative rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-800 overflow-hidden text-white shadow-xl">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+        <div className="relative p-8 sm:p-12 text-center md:text-left flex flex-col md:flex-row items-center gap-8">
+            <div className="flex-1 space-y-4">
+                <div className="inline-block px-3 py-1 bg-emerald-500/30 rounded-full border border-emerald-400/30 text-emerald-100 text-sm font-semibold tracking-wider">
+                    DEEP LEARNING FASE F
+                </div>
+                <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight">KBM KIMIA <br className="hidden sm:block"/>ASAM BASA</h1>
+                <p className="text-emerald-100 max-w-lg text-lg">Pelajari konsep, teori, dan aplikasi Asam Basa dalam kehidupan sehari-hari secara interaktif dan mendalam.</p>
+                <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                    <button onClick={() => navigateTo('tujuan')} className="px-6 py-3 bg-white text-emerald-700 font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
+                        <IconTarget /> Mulai Pembelajaran
+                    </button>
+                </div>
+            </div>
+            <div className="hidden md:block w-48 h-48 bg-white p-4 rounded-2xl shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
+                <img src="https://user37617.na.imgto.link/public/20261005/1001254612.avif" alt="Logo MAN" className="w-full h-full object-contain" />
+            </div>
+        </div>
+      </div>
+
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { title: "Identitas", icon: <IconBook/>, text: "Guru: Maid Amir<br/>Kelas: XI / Fase F<br/>Sekolah: MAN 2 Nganjuk" },
+          { title: "Metode", icon: <IconLightbulb/>, text: "Kurikulum Kemenag RI<br/>KBC + Deep Learning<br/>Eksploratif & Kritis" },
+          { title: "Alur Belajar", icon: <IconCompass/>, text: "Materi → Praktik → Quiz →<br/>LKPD → Refleksi → Evaluasi" }
+        ].map((item, i) => (
+          <div key={i} className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+            <div className="text-emerald-500 mb-3 bg-emerald-50 dark:bg-emerald-900/30 w-12 h-12 rounded-xl flex items-center justify-center">{item.icon}</div>
+            <h3 className="font-bold text-slate-800 dark:text-white mb-2">{item.title}</h3>
+            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed" dangerouslySetInnerHTML={{__html: item.text}}></p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const SectionTujuan = () => (
+    <div className="animate-in fade-in duration-500 space-y-6">
+      <div className="border-b border-slate-200 dark:border-slate-700 pb-4">
+        <h2 className="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+            <span className="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 p-2 rounded-xl"><IconTarget /></span>
+            Tujuan Pembelajaran
+        </h2>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">Setelah mengikuti pembelajaran materi Asam Basa, peserta didik diharapkan mampu:</p>
+      </div>
+
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+        <ul className="divide-y divide-slate-100 dark:divide-slate-700">
+            {[
+                "Menjelaskan konsep dan teori asam basa (Arrhenius, Brønsted-Lowry, Lewis).",
+                "Mengidentifikasi dan membedakan sifat serta karakteristik asam dan basa.",
+                "Mengklasifikasikan jenis asam dan basa berdasarkan kekuatannya.",
+                "Menjelaskan prinsip kerja indikator asam basa dan menentukan sifat larutan.",
+                "Menjelaskan konsep pH dan pOH serta hubungan keduanya.",
+                "Menghitung pH larutan asam/basa kuat dan lemah menggunakan rumus yang tepat.",
+                "Menjelaskan konsep ionisasi dan kesetimbangan pada asam/basa lemah.",
+                "Menjelaskan reaksi asam basa dan konsep netralisasi.",
+                "Menganalisis fenomena asam basa dalam kehidupan sehari-hari.",
+                "Melakukan praktik sederhana mengidentifikasi sifat asam basa.",
+                "Menunjukkan sikap teliti, kritis, jujur, dan bertanggung jawab."
+            ].map((tujuan, i) => (
+                <li key={i} className="p-4 sm:px-6 flex gap-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm font-bold mt-0.5">{i+1}</div>
+                    <p className="text-slate-700 dark:text-slate-300">{tujuan}</p>
+                </li>
+            ))}
+        </ul>
+      </div>
+    </div>
+  );
+
+  const SectionEksplorasi = () => (
+    <div className="animate-in fade-in duration-500 space-y-6">
+       <div className="border-b border-slate-200 dark:border-slate-700 pb-4">
+        <h2 className="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+            <span className="bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 p-2 rounded-xl"><IconCompass /></span>
+            Eksplorasi Fenomena
+        </h2>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">Mari amati fenomena di sekitar kita sebelum mempelajari teori lebih dalam.</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {[
+            { q: "Mengapa jeruk terasa masam?", img: "🍊", desc: "Buah-buahan sitrus mengandung senyawa tertentu yang memberikan rasa khas." },
+            { q: "Mengapa sabun terasa licin?", img: "🧼", desc: "Produk pembersih memiliki karakteristik berbeda saat bersentuhan dengan kulit." },
+            { q: "Mengapa obat maag meredakan nyeri?", img: "💊", desc: "Lambung memproduksi asam. Obat maag bekerja menetralisir kelebihan asam tersebut." },
+            { q: "Mengapa bunga hortensia berbeda warna?", img: "🌸", desc: "Warna beberapa bunga sangat bergantung pada kondisi tanah tempat mereka tumbuh." }
+        ].map((item, i) => (
+            <div key={i} className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex gap-4 items-start hover:shadow-md transition-all group">
+                <div className="text-4xl bg-slate-50 dark:bg-slate-700 p-3 rounded-xl group-hover:scale-110 transition-transform">{item.img}</div>
+                <div>
+                    <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-2">{item.q}</h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">{item.desc}</p>
+                </div>
+            </div>
+        ))}
+      </div>
+
+      <div className="bg-emerald-50 dark:bg-emerald-900/20 p-6 rounded-2xl border border-emerald-100 dark:border-emerald-800 text-center">
+        <h3 className="font-bold text-emerald-800 dark:text-emerald-300 text-xl mb-3 flex justify-center items-center gap-2"><IconLightbulb/> Pertanyaan Pemantik</h3>
+        <p className="text-emerald-700 dark:text-emerald-400 italic">"Apakah sifat yang membuat suatu zat terasa masam, licin, atau dapat mengubah warna tumbuhan tertentu? Bagaimana ahli kimia mendefinisikan dan mengukur sifat-sifat tersebut?"</p>
+      </div>
+    </div>
+  );
+
+  const SectionMateri = () => {
+    const [subTab, setSubTab] = useState('teori');
+    const tabs = [
+        { id: 'teori', label: 'Teori Asam Basa' },
+        { id: 'jenis', label: 'Kekuatan & Jenis' },
+        { id: 'indikator', label: 'Indikator' },
+        { id: 'ph', label: 'Perhitungan pH' },
+        { id: 'reaksi', label: 'Reaksi Netralisasi' }
+    ];
+
+    return (
+      <div className="animate-in fade-in duration-500 flex flex-col h-full">
+         <div className="border-b border-slate-200 dark:border-slate-700 pb-4 mb-6">
+            <h2 className="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+                <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 p-2 rounded-xl"><IconBook /></span>
+                Materi Pembelajaran
+            </h2>
+        </div>
+
+        {/* Sub Navigation */}
+        <div className="flex overflow-x-auto pb-2 mb-6 scrollbar-hide gap-2">
+            {tabs.map(t => (
+                <button 
+                    key={t.id} 
+                    onClick={() => setSubTab(t.id)}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${subTab === t.id ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                >
+                    {t.label}
+                </button>
+            ))}
+        </div>
+
+        {/* Content Area */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6 sm:p-8 flex-1">
+            
+            {/* SUB TAB: TEORI */}
+            {subTab === 'teori' && (
+                <div className="space-y-8 animate-in slide-in-from-right-4">
+                    <h3 className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 border-b-2 border-emerald-100 dark:border-emerald-900 pb-2">Perkembangan Teori Asam Basa</h3>
+                    
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {/* Arrhenius */}
+                        <div className="bg-slate-50 dark:bg-slate-900 p-5 rounded-xl border-l-4 border-blue-500 shadow-sm">
+                            <h4 className="font-bold text-lg mb-2 dark:text-white">1. Teori Arrhenius</h4>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">Zat dalam air melepaskan ion:</p>
+                            <ul className="text-sm space-y-2 mb-4 dark:text-slate-300">
+                                <li><span className="font-semibold text-red-500">Asam:</span> Menghasilkan ion {formatChem('H^+')}</li>
+                                <li><span className="font-semibold text-blue-500">Basa:</span> Menghasilkan ion {formatChem('OH^-')}</li>
+                            </ul>
+                            <div className="bg-white dark:bg-slate-800 p-3 rounded text-sm font-mono text-center border border-slate-200 dark:border-slate-700">
+                                {formatChem('HCl -> H^+ + Cl^-')}<br/>
+                                {formatChem('NaOH -> Na^+ + OH^-')}
+                            </div>
+                        </div>
+
+                        {/* Bronsted-Lowry */}
+                        <div className="bg-slate-50 dark:bg-slate-900 p-5 rounded-xl border-l-4 border-amber-500 shadow-sm">
+                            <h4 className="font-bold text-lg mb-2 dark:text-white">2. Brønsted-Lowry</h4>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">Transfer Proton ({formatChem('H^+')}):</p>
+                            <ul className="text-sm space-y-2 mb-4 dark:text-slate-300">
+                                <li><span className="font-semibold text-red-500">Asam:</span> Donor proton</li>
+                                <li><span className="font-semibold text-blue-500">Basa:</span> Akseptor proton</li>
+                            </ul>
+                            <div className="bg-white dark:bg-slate-800 p-3 rounded text-sm font-mono text-center border border-slate-200 dark:border-slate-700">
+                                {formatChem('HCl + H_2O ⇌ H_3O^+ + Cl^-')}
+                            </div>
+                            <p className="text-xs text-slate-500 mt-2 italic">Mengenalkan konsep pasangan asam-basa konjugasi.</p>
+                        </div>
+
+                        {/* Lewis */}
+                        <div className="bg-slate-50 dark:bg-slate-900 p-5 rounded-xl border-l-4 border-purple-500 shadow-sm">
+                            <h4 className="font-bold text-lg mb-2 dark:text-white">3. Teori Lewis</h4>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">Transfer Pasangan Elektron:</p>
+                            <ul className="text-sm space-y-2 mb-4 dark:text-slate-300">
+                                <li><span className="font-semibold text-red-500">Asam:</span> Akseptor pasangan elektron</li>
+                                <li><span className="font-semibold text-blue-500">Basa:</span> Donor pasangan elektron</li>
+                            </ul>
+                            <div className="bg-white dark:bg-slate-800 p-3 rounded text-sm font-mono text-center border border-slate-200 dark:border-slate-700">
+                                {formatChem('BF_3 + NH_3 -> F_3B-NH_3')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* SUB TAB: JENIS */}
+            {subTab === 'jenis' && (
+                 <div className="space-y-6 animate-in slide-in-from-right-4">
+                     <h3 className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 border-b-2 border-emerald-100 dark:border-emerald-900 pb-2">Kekuatan Asam dan Basa</h3>
+                     <p className="text-slate-600 dark:text-slate-400">Kekuatan asam/basa bergantung pada kemampuannya terionisasi dalam air (derajat ionisasi / α), bukan seberapa pekat konsentrasinya.</p>
+                     
+                     <div className="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 className="font-bold text-xl text-red-600 mb-4 flex items-center gap-2">Asam Kuat & Basa Kuat</h4>
+                            <div className="bg-red-50 dark:bg-red-900/20 p-5 rounded-xl border border-red-100 dark:border-red-800">
+                                <ul className="list-disc pl-5 space-y-2 text-slate-700 dark:text-slate-300 mb-4">
+                                    <li>Terionisasi sempurna dalam air (α = 1).</li>
+                                    <li>Daya hantar listrik sangat baik (elektrolit kuat).</li>
+                                </ul>
+                                <div className="space-y-3">
+                                    <div className="bg-white dark:bg-slate-800 p-3 rounded shadow-sm">
+                                        <strong className="block text-sm text-red-700 dark:text-red-400">Contoh Asam Kuat:</strong>
+                                        <span className="text-sm font-mono">{formatChem('HCl, HBr, HI, HNO_3, H_2SO_4, HClO_4')}</span>
+                                    </div>
+                                    <div className="bg-white dark:bg-slate-800 p-3 rounded shadow-sm">
+                                        <strong className="block text-sm text-blue-700 dark:text-blue-400">Contoh Basa Kuat:</strong>
+                                        <span className="text-sm font-mono">{formatChem('NaOH, KOH, Ba(OH)_2, Ca(OH)_2')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 className="font-bold text-xl text-amber-600 mb-4 flex items-center gap-2">Asam Lemah & Basa Lemah</h4>
+                            <div className="bg-amber-50 dark:bg-amber-900/20 p-5 rounded-xl border border-amber-100 dark:border-amber-800">
+                                <ul className="list-disc pl-5 space-y-2 text-slate-700 dark:text-slate-300 mb-4">
+                                    <li>Terionisasi sebagian dalam air (0 &lt; α &lt; 1).</li>
+                                    <li>Memiliki tetapan kesetimbangan (Ka untuk asam, Kb untuk basa).</li>
+                                </ul>
+                                <div className="space-y-3">
+                                    <div className="bg-white dark:bg-slate-800 p-3 rounded shadow-sm">
+                                        <strong className="block text-sm text-orange-700 dark:text-orange-400">Contoh Asam Lemah:</strong>
+                                        <span className="text-sm font-mono">{formatChem('CH_3COOH, HF, H_2CO_3, HCN')}</span>
+                                    </div>
+                                    <div className="bg-white dark:bg-slate-800 p-3 rounded shadow-sm">
+                                        <strong className="block text-sm text-teal-700 dark:text-teal-400">Contoh Basa Lemah:</strong>
+                                        <span className="text-sm font-mono">{formatChem('NH_3 (NH_4OH), Al(OH)_3')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+
+                     <div className="mt-4 bg-slate-100 dark:bg-slate-900 p-4 rounded-xl border-l-4 border-slate-500">
+                        <strong className="text-slate-800 dark:text-white">Penting: Beda Kuat vs Pekat</strong>
+                        <p className="text-sm mt-1 text-slate-600 dark:text-slate-400">Asam Kuat = Banyak menghasilkan ion (mudah terurai). Asam Pekat = Jumlah partikel terlarutnya banyak dalam sedikit pelarut. Larutan {formatChem('CH_3COOH')} 10 M adalah asam lemah yang pekat, sedangkan HCl 0,001 M adalah asam kuat yang encer.</p>
+                     </div>
+                 </div>
+            )}
+
+             {/* SUB TAB: INDIKATOR */}
+             {subTab === 'indikator' && (
+                 <div className="space-y-6 animate-in slide-in-from-right-4">
+                     <h3 className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 border-b-2 border-emerald-100 dark:border-emerald-900 pb-2">Indikator Asam Basa</h3>
+                     <p className="text-slate-600 dark:text-slate-400">Zat warna yang warnanya bergantung pada pH larutan.</p>
+                     
+                     <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse min-w-[600px]">
+                            <thead>
+                                <tr className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300">
+                                    <th className="p-3 border-b dark:border-slate-700">Indikator</th>
+                                    <th className="p-3 border-b dark:border-slate-700">Trayek pH</th>
+                                    <th className="p-3 border-b dark:border-slate-700 text-center">Warna Asam</th>
+                                    <th className="p-3 border-b dark:border-slate-700 text-center">Warna Basa</th>
+                                </tr>
+                            </thead>
+                            <tbody className="text-sm dark:text-slate-300">
+                                {[
+                                    { name: "Lakmus Merah", trayek: "5.5 - 8.0", asam: "Merah", asamColor: "bg-red-500 text-white", basa: "Biru", basaColor: "bg-blue-500 text-white" },
+                                    { name: "Lakmus Biru", trayek: "5.5 - 8.0", asam: "Merah", asamColor: "bg-red-500 text-white", basa: "Biru", basaColor: "bg-blue-500 text-white" },
+                                    { name: "Metil Jingga (MO)", trayek: "3.1 - 4.4", asam: "Merah", asamColor: "bg-red-500 text-white", basa: "Kuning", basaColor: "bg-yellow-400 text-black" },
+                                    { name: "Metil Merah (MM)", trayek: "4.4 - 6.2", asam: "Merah", asamColor: "bg-red-500 text-white", basa: "Kuning", basaColor: "bg-yellow-400 text-black" },
+                                    { name: "Bromtimol Biru (BTB)", trayek: "6.0 - 7.6", asam: "Kuning", asamColor: "bg-yellow-400 text-black", basa: "Biru", basaColor: "bg-blue-500 text-white" },
+                                    { name: "Fenolftalein (PP)", trayek: "8.3 - 10.0", asam: "Tak Berwarna", asamColor: "border border-dashed border-slate-400 text-slate-500", basa: "Merah Muda", basaColor: "bg-pink-400 text-white" },
+                                ].map((ind, i) => (
+                                    <tr key={i} className="border-b dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                                        <td className="p-3 font-medium">{ind.name}</td>
+                                        <td className="p-3 font-mono">{ind.trayek}</td>
+                                        <td className="p-3 text-center"><span className={`px-3 py-1 rounded-full text-xs font-bold ${ind.asamColor}`}>{ind.asam}</span></td>
+                                        <td className="p-3 text-center"><span className={`px-3 py-1 rounded-full text-xs font-bold ${ind.basaColor}`}>{ind.basa}</span></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                     </div>
+
+                     <div className="bg-indigo-50 dark:bg-indigo-900/20 p-5 rounded-xl border border-indigo-100 dark:border-indigo-800">
+                        <h4 className="font-bold text-indigo-800 dark:text-indigo-300 mb-2">🌿 Indikator Alami</h4>
+                        <p className="text-sm text-slate-700 dark:text-slate-300 mb-3">Ekstrak tumbuhan dapat digunakan sebagai indikator karena mengandung pigmen warna (seperti antosianin) yang peka terhadap perubahan pH.</p>
+                        <ul className="list-disc pl-5 text-sm space-y-1 text-slate-600 dark:text-slate-400">
+                            <li><strong>Kol Ungu:</strong> Merah (Asam) → Ungu (Netral) → Hijau/Kuning (Basa)</li>
+                            <li><strong>Bunga Sepatu:</strong> Merah (Asam) → Hijau (Basa)</li>
+                            <li><strong>Kunyit:</strong> Kuning cerah (Asam/Netral) → Merah bata (Basa)</li>
+                        </ul>
+                     </div>
+                 </div>
+             )}
+
+            {/* SUB TAB: pH */}
+            {subTab === 'ph' && (
+                 <div className="space-y-6 animate-in slide-in-from-right-4">
+                     <h3 className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 border-b-2 border-emerald-100 dark:border-emerald-900 pb-2">Konsep & Perhitungan pH</h3>
+                     
+                     <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-xl text-center">
+                        <div className="text-xl font-mono font-bold dark:text-white">pH = -log {formatChem('[H^+]')}</div>
+                        <div className="text-xl font-mono font-bold mt-2 dark:text-white">pOH = -log {formatChem('[OH^-]')}</div>
+                        <div className="text-lg font-mono text-emerald-600 dark:text-emerald-400 mt-2">pH + pOH = 14  <span className="text-sm text-slate-500">(pada 25°C)</span></div>
+                     </div>
+
+                     <div className="grid md:grid-cols-2 gap-6">
+                         {/* Kuat */}
+                         <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-5 shadow-sm">
+                             <h4 className="font-bold text-lg text-slate-800 dark:text-white mb-4 text-center border-b pb-2">Asam & Basa Kuat</h4>
+                             <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 text-center">Terionisasi Sempurna</p>
+                             
+                             <div className="space-y-4">
+                                 <div>
+                                    <div className="font-semibold text-red-500">Asam Kuat:</div>
+                                    <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded font-mono text-center my-1 text-sm dark:text-white">
+                                        {formatChem('[H^+] = a × M_a')}
+                                    </div>
+                                    <div className="text-xs text-slate-500 text-center">a = valensi asam (jumlah H⁺)</div>
+                                 </div>
+                                 <div>
+                                    <div className="font-semibold text-blue-500">Basa Kuat:</div>
+                                    <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded font-mono text-center my-1 text-sm dark:text-white">
+                                        {formatChem('[OH^-] = b × M_b')}
+                                    </div>
+                                    <div className="text-xs text-slate-500 text-center">b = valensi basa (jumlah OH⁻)</div>
+                                 </div>
+                             </div>
+                         </div>
+
+                         {/* Lemah */}
+                         <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-5 shadow-sm">
+                             <h4 className="font-bold text-lg text-slate-800 dark:text-white mb-4 text-center border-b pb-2">Asam & Basa Lemah</h4>
+                             <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 text-center">Terionisasi Sebagian (Memiliki Ka/Kb)</p>
+                             
+                             <div className="space-y-4">
+                                 <div>
+                                    <div className="font-semibold text-amber-600">Asam Lemah:</div>
+                                    <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded font-mono text-center my-1 text-sm dark:text-white flex justify-center items-center gap-4">
+                                        <span>{formatChem('[H^+] = √(K_a × M_a)')}</span>
+                                        <span className="text-xs italic text-slate-400">atau</span>
+                                        <span>{formatChem('[H^+] = α × M_a')}</span>
+                                    </div>
+                                 </div>
+                                 <div>
+                                    <div className="font-semibold text-teal-600">Basa Lemah:</div>
+                                    <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded font-mono text-center my-1 text-sm dark:text-white flex justify-center items-center gap-4">
+                                        <span>{formatChem('[OH^-] = √(K_b × M_b)')}</span>
+                                        <span className="text-xs italic text-slate-400">atau</span>
+                                        <span>{formatChem('[OH^-] = α × M_b')}</span>
+                                    </div>
+                                 </div>
+                                 <p className="text-[10px] text-slate-400 text-center">*Asumsi derajat ionisasi (α) sangat kecil.</p>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+            )}
+
+             {/* SUB TAB: REAKSI */}
+             {subTab === 'reaksi' && (
+                 <div className="space-y-6 animate-in slide-in-from-right-4">
+                     <h3 className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 border-b-2 border-emerald-100 dark:border-emerald-900 pb-2">Reaksi Asam Basa (Netralisasi)</h3>
+                     <p className="text-slate-600 dark:text-slate-400">Reaksi antara asam dan basa akan membentuk garam dan (biasanya) air. Sifat garam yang dihasilkan bergantung pada kekuatan asam dan basa penyusunnya.</p>
+                     
+                     <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl font-mono text-center text-lg border border-slate-200 dark:border-slate-700 shadow-sm dark:text-white">
+                         ASAM + BASA → GARAM + AIR
+                     </div>
+
+                     <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-sm">
+                            <h4 className="font-bold text-slate-800 dark:text-white text-center mb-2">Asam Kuat + Basa Kuat</h4>
+                            <p className="text-xs text-center text-slate-500 mb-2">Menghasilkan garam netral (pH = 7)</p>
+                            <div className="text-sm font-mono text-center text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 p-2 rounded">
+                                {formatChem('HCl + NaOH -> NaCl + H_2O')}
+                            </div>
+                        </div>
+                        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-sm">
+                            <h4 className="font-bold text-slate-800 dark:text-white text-center mb-2">Asam Lemah + Basa Kuat</h4>
+                            <p className="text-xs text-center text-slate-500 mb-2">Menghasilkan garam basa (pH &gt; 7) akibat hidrolisis anion</p>
+                            <div className="text-sm font-mono text-center text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
+                                {formatChem('CH_3COOH + NaOH -> CH_3COONa + H_2O')}
+                            </div>
+                        </div>
+                        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-sm">
+                            <h4 className="font-bold text-slate-800 dark:text-white text-center mb-2">Asam Kuat + Basa Lemah</h4>
+                            <p className="text-xs text-center text-slate-500 mb-2">Menghasilkan garam asam (pH &lt; 7) akibat hidrolisis kation</p>
+                            <div className="text-sm font-mono text-center text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded">
+                                {formatChem('HCl + NH_4OH -> NH_4Cl + H_2O')}
+                            </div>
+                        </div>
+                     </div>
+                 </div>
+             )}
+
+        </div>
+      </div>
+    );
+  };
+
+  const SectionContoh = () => {
+      const examples = [
+          { level: "Level 1 - Dasar", title: "Menghitung pH Asam Kuat", q: "Tentukan pH dari 100 mL larutan HCl 0,02 M!", hint: "HCl adalah asam kuat valensi 1.", ans: "pH = 2 - log 2", step: "1. Identifikasi asam: HCl (Asam Kuat, a = 1)\n2. [H⁺] = a × M = 1 × 0,02 = 2 × 10⁻² M\n3. pH = -log(2 × 10⁻²) = 2 - log 2" },
+          { level: "Level 2 - Pemahaman", title: "Menghitung pH Basa Lemah", q: `Tentukan pH larutan NH₃ 0,1 M jika diketahui Kb = 10⁻⁵!`, hint: "Gunakan rumus basa lemah: [OH⁻] = √(Kb × M)", ans: "pH = 11", step: "1. Identifikasi basa: NH₃ (Basa Lemah)\n2. [OH⁻] = √(10⁻⁵ × 10⁻¹) = √10⁻⁶ = 10⁻³ M\n3. pOH = -log(10⁻³) = 3\n4. pH = 14 - pOH = 14 - 3 = 11" },
+          { level: "Level 4 - Analisis", title: "Analisis Campuran Asam Basa Kuat", q: "Sebanyak 50 mL larutan H₂SO₄ 0,1 M dicampur dengan 100 mL NaOH 0,1 M. Tentukan pH campuran tersebut!", hint: "Cari mol masing-masing. Tentukan reaksi pembatas.", ans: "pH = 7 (Netral)", step: "1. Mol H₂SO₄ = 50 mL × 0,1 M = 5 mmol\n2. Mol NaOH = 100 mL × 0,1 M = 10 mmol\n3. Reaksi: H₂SO₄ + 2NaOH → Na₂SO₄ + 2H₂O\n   Mula: 5 mmol | 10 mmol\n   Reaksi: -5 mmol | -10 mmol\n   Sisa: 0 | 0\n4. Karena asam kuat dan basa kuat sama-sama habis bereaksi, terbentuk garam Na₂SO₄ yang netral. Sehingga pH = 7." },
+      ];
+
+      const [openId, setOpenId] = useState(null);
+
+      return (
+          <div className="animate-in fade-in duration-500 space-y-6">
+              <div className="border-b border-slate-200 dark:border-slate-700 pb-4">
+                <h2 className="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+                    <span className="bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 p-2 rounded-xl"><IconLightbulb /></span>
+                    Contoh Penyelesaian Berjenjang
+                </h2>
+                <p className="text-slate-500 dark:text-slate-400 mt-2">Pelajari langkah-langkah penyelesaian soal dari tingkat dasar hingga analisis.</p>
+              </div>
+
+              <div className="space-y-4">
+                  {examples.map((ex, i) => (
+                      <div key={i} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm">
+                          <button 
+                              onClick={() => setOpenId(openId === i ? null : i)}
+                              className="w-full text-left p-5 flex justify-between items-center hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                          >
+                              <div>
+                                  <span className="text-xs font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-2 py-1 rounded mb-2 inline-block">{ex.level}</span>
+                                  <h3 className="font-bold text-slate-800 dark:text-white text-lg">{ex.title}</h3>
+                              </div>
+                              <div className={`transform transition-transform ${openId === i ? 'rotate-90' : ''}`}><IconArrowRight/></div>
+                          </button>
+                          
+                          {openId === i && (
+                              <div className="p-5 pt-0 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 animate-in slide-in-from-top-2">
+                                  <div className="mb-4">
+                                      <strong className="text-slate-700 dark:text-slate-300">Soal:</strong>
+                                      <p className="text-slate-800 dark:text-white font-medium mt-1">{ex.q}</p>
+                                  </div>
+                                  <div className="mb-4 bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg border border-yellow-200 dark:border-yellow-800/50">
+                                      <strong className="text-yellow-800 dark:text-yellow-500 text-sm flex items-center gap-1"><IconLightbulb/> Petunjuk:</strong>
+                                      <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-1">{ex.hint}</p>
+                                  </div>
+                                  <div>
+                                      <strong className="text-emerald-700 dark:text-emerald-400">Pembahasan:</strong>
+                                      <pre className="mt-2 text-sm text-slate-700 dark:text-slate-300 font-mono bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700 whitespace-pre-wrap">{ex.step}</pre>
+                                  </div>
+                                  <div className="mt-4 text-right">
+                                      <span className="inline-block bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 font-bold px-4 py-2 rounded-xl">Jawaban: {ex.ans}</span>
+                                  </div>
+                              </div>
+                          )}
+                      </div>
+                  ))}
+              </div>
+          </div>
+      );
+  };
+
+  const SectionPraktik = () => {
+      const [liquid, setLiquid] = useState(null);
+      
+      const getIndicatorColor = () => {
+          if(!liquid) return 'bg-slate-200 dark:bg-slate-700';
+          if(liquid === 'asam') return 'bg-red-500';
+          if(liquid === 'basa') return 'bg-green-500'; // Kol ungu di basa lemah hijau
+          return 'bg-purple-500';
+      };
+
+      return (
+        <div className="animate-in fade-in duration-500 space-y-6">
+            <div className="border-b border-slate-200 dark:border-slate-700 pb-4">
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+                  <span className="bg-pink-100 dark:bg-pink-900/50 text-pink-600 dark:text-pink-400 p-2 rounded-xl"><IconFlask /></span>
+                  Praktik Virtual Sederhana
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                    <h3 className="font-bold text-xl dark:text-white">Uji Ekstrak Kol Ungu</h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Simulasikan pengujian larutan dengan indikator alami ekstrak kol ungu (warna asli: ungu terang).</p>
+                    
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center">
+                        {/* Gelas Kimia Virtual */}
+                        <div className="relative w-32 h-40 border-4 border-t-0 border-slate-300 dark:border-slate-600 rounded-b-xl overflow-hidden mb-6 flex items-end">
+                            <div className={`w-full transition-all duration-1000 ${getIndicatorColor()} opacity-80`} style={{ height: liquid ? '70%' : '10%' }}></div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
+                            {!liquid && <span className="absolute inset-0 flex items-center justify-center text-xs text-slate-400 font-bold">Kosong</span>}
+                        </div>
+
+                        <div className="flex gap-3 flex-wrap justify-center">
+                            <button onClick={() => setLiquid('asam')} className="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl text-sm font-medium transition-colors dark:text-white">💧 Tetes Air Jeruk</button>
+                            <button onClick={() => setLiquid('basa')} className="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl text-sm font-medium transition-colors dark:text-white">💧 Tetes Air Sabun</button>
+                            <button onClick={() => setLiquid(null)} className="px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-xl text-sm font-bold transition-colors">Bilas</button>
+                        </div>
+
+                        {liquid && (
+                            <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 w-full text-center">
+                                <p className="text-sm font-bold dark:text-white">Hasil Pengamatan:</p>
+                                <p className="text-slate-600 dark:text-slate-400 mt-1">
+                                    {liquid === 'asam' ? 'Kol ungu menjadi MERAH. Kesimpulan: Bersifat Asam (pH < 7)' : 'Kol ungu menjadi HIJAU. Kesimpulan: Bersifat Basa (pH > 7)'}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 p-6 rounded-2xl border border-emerald-100 dark:border-emerald-800/50">
+                    <h3 className="font-bold text-emerald-800 dark:text-emerald-400 mb-3 text-lg">Panduan Praktikum Nyata</h3>
+                    <ul className="list-decimal pl-5 space-y-2 text-sm text-emerald-700 dark:text-emerald-300">
+                        <li>Siapkan alat: gelas plastik transparan, sendok.</li>
+                        <li>Siapkan bahan: irisan kol ungu, air panas, cuka, air jeruk, larutan sabun, larutan soda kue.</li>
+                        <li>Rendam irisan kol ungu dalam air panas selama 10 menit hingga air berwarna ungu pekat. Pisahkan ampasnya.</li>
+                        <li>Tuang sedikit ekstrak kol ungu ke dalam gelas-gelas berbeda.</li>
+                        <li>Tambahkan bahan uji (cuka, sabun, dll) ke masing-masing gelas.</li>
+                        <li>Amati perubahan warna dan catat hasilnya pada LKPD.</li>
+                        <li className="font-bold text-red-600 dark:text-red-400 mt-2">Perhatian: Jangan mencicipi bahan kimia di laboratorium.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+      );
+  };
+
+  const AssessmentComponent = ({ data, title, icon, onComplete, initialScore }) => {
+      const [currentQ, setCurrentQ] = useState(0);
+      const [answers, setAnswers] = useState(new Array(data.length).fill(null));
+      const [showResult, setShowResult] = useState(initialScore !== null);
+      const [scoreObj, setScoreObj] = useState(initialScore);
+
+      const handleAnswer = (index) => {
+          const newAnswers = [...answers];
+          newAnswers[currentQ] = index;
+          setAnswers(newAnswers);
+      };
+
+      const calculateScore = () => {
+          let correct = 0;
+          answers.forEach((ans, idx) => {
+              if(ans === data[idx].correct) correct++;
+          });
+          const score = Math.round((correct / data.length) * 100);
+          
+          let predikat = "Perlu Bimbingan";
+          if(score >= 90) predikat = "Sangat Baik";
+          else if(score >= 80) predikat = "Baik";
+          else if(score >= 70) predikat = "Cukup";
+
+          const result = { score, correct, total: data.length, predikat };
+          setScoreObj(result);
+          setShowResult(true);
+          onComplete(result);
+      };
+
+      if (showResult) {
+          return (
+              <div className="animate-in zoom-in duration-500 bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-lg text-center max-w-2xl mx-auto">
+                  <div className="w-24 h-24 mx-auto bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center text-4xl mb-4">🏆</div>
+                  <h3 className="text-2xl font-bold dark:text-white mb-2">Hasil {title}</h3>
+                  <div className="text-6xl font-black text-emerald-600 dark:text-emerald-400 mb-2">{scoreObj.score}</div>
+                  <p className="text-lg font-semibold text-slate-600 dark:text-slate-300 mb-6">Predikat: {scoreObj.predikat}</p>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                      <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl">
+                          <div className="text-slate-500 dark:text-slate-400 text-sm">Jawaban Benar</div>
+                          <div className="text-2xl font-bold text-slate-800 dark:text-white">{scoreObj.correct}</div>
+                      </div>
+                      <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl">
+                          <div className="text-slate-500 dark:text-slate-400 text-sm">Jawaban Salah</div>
+                          <div className="text-2xl font-bold text-slate-800 dark:text-white">{scoreObj.total - scoreObj.correct}</div>
+                      </div>
+                  </div>
+
+                  <div className="text-left space-y-6 mt-8 border-t border-slate-200 dark:border-slate-700 pt-8">
+                      <h4 className="font-bold text-lg dark:text-white mb-4">Pembahasan Singkat</h4>
+                      {data.map((q, i) => (
+                          <div key={i} className={`p-4 rounded-xl border ${answers[i] === q.correct ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-900/10 dark:border-emerald-800' : 'bg-red-50 border-red-200 dark:bg-red-900/10 dark:border-red-800'}`}>
+                              <p className="font-medium text-sm mb-2 dark:text-slate-200" dangerouslySetInnerHTML={{__html: `${i+1}. ${formatChem(q.text).props.dangerouslySetInnerHTML.__html}`}}></p>
+                              <p className="text-xs text-slate-600 dark:text-slate-400 mt-2"><strong className="text-slate-800 dark:text-slate-300">Penjelasan:</strong> {q.explanation}</p>
+                          </div>
+                      ))}
+                  </div>
+
+                  <button onClick={() => { setShowResult(false); setAnswers(new Array(data.length).fill(null)); setCurrentQ(0); onComplete(null); }} className="mt-8 px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-white rounded-xl font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                      Ulangi {title}
+                  </button>
+              </div>
+          );
+      }
+
+      const q = data[currentQ];
+
+      return (
+          <div className="animate-in fade-in duration-500 max-w-3xl mx-auto">
+               <div className="flex justify-between items-center mb-6">
+                   <h2 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                      <span className="text-emerald-500">{icon}</span> {title}
+                   </h2>
+                   <div className="text-sm font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+                       Soal {currentQ + 1} / {data.length}
+                   </div>
+               </div>
+
+               {/* Progress bar Soal */}
+               <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full mb-8 overflow-hidden">
+                   <div className="h-full bg-emerald-500 transition-all duration-300" style={{width: `${((currentQ)/data.length)*100}%`}}></div>
+               </div>
+
+               <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 sm:p-8 shadow-sm">
+                   <div className="mb-6 flex justify-between items-start gap-4">
+                       <p className="text-lg sm:text-xl font-medium text-slate-800 dark:text-white leading-relaxed" dangerouslySetInnerHTML={{__html: formatChem(q.text).props.dangerouslySetInnerHTML.__html}}></p>
+                       <span className="text-xs font-bold px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-500 rounded whitespace-nowrap">{q.difficulty}</span>
+                   </div>
+
+                   <div className="space-y-3">
+                       {q.options.map((opt, i) => (
+                           <button
+                               key={i}
+                               onClick={() => handleAnswer(i)}
+                               className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-3 ${
+                                   answers[currentQ] === i 
+                                   ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 font-semibold' 
+                                   : 'border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 text-slate-700 dark:text-slate-300'
+                               }`}
+                           >
+                               <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${answers[currentQ] === i ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 dark:border-slate-600'}`}>
+                                   {answers[currentQ] === i && <IconCheck />}
+                               </div>
+                               <span dangerouslySetInnerHTML={{__html: formatChem(opt).props.dangerouslySetInnerHTML.__html}}></span>
+                           </button>
+                       ))}
+                   </div>
+               </div>
+
+               <div className="flex justify-between mt-8">
+                   <button 
+                       onClick={() => setCurrentQ(prev => Math.max(0, prev - 1))}
+                       disabled={currentQ === 0}
+                       className="px-6 py-2 rounded-xl font-medium text-slate-500 disabled:opacity-50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                   >
+                       Mundur
+                   </button>
+                   {currentQ === data.length - 1 ? (
+                       <button 
+                           onClick={calculateScore}
+                           disabled={answers.includes(null)}
+                           className="px-8 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-md disabled:opacity-50 transition-colors"
+                       >
+                           Selesai & Cek Nilai
+                       </button>
+                   ) : (
+                       <button 
+                           onClick={() => setCurrentQ(prev => Math.min(data.length - 1, prev + 1))}
+                           disabled={answers[currentQ] === null}
+                           className="px-8 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md disabled:opacity-50 transition-colors"
+                       >
+                           Lanjut
+                       </button>
+                   )}
+               </div>
+          </div>
+      );
+  };
+
+  const SectionLKPD = () => {
+      const handleInputChange = (e, field) => setStudentInfo({...studentInfo, [field]: e.target.value});
+      
+      return (
+          <div className="animate-in fade-in duration-500 max-w-4xl mx-auto bg-white dark:bg-slate-800 p-6 sm:p-10 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700">
+              <div className="text-center mb-8 border-b-4 border-emerald-500 pb-4 inline-block mx-auto w-full">
+                  <h2 className="text-2xl font-black tracking-widest text-slate-800 dark:text-white">LEMBAR KERJA PESERTA DIDIK (LKPD)</h2>
+                  <p className="text-emerald-600 dark:text-emerald-400 font-semibold tracking-widest mt-1">MATERI ASAM BASA</p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4 mb-8 bg-slate-50 dark:bg-slate-900 p-6 rounded-xl">
+                  <div><label className="text-xs font-bold text-slate-500 uppercase">Nama Lengkap</label><input type="text" value={studentInfo.name} onChange={e => handleInputChange(e, 'name')} className="w-full mt-1 p-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded text-sm dark:text-white" placeholder="Masukkan nama..." /></div>
+                  <div><label className="text-xs font-bold text-slate-500 uppercase">Kelas</label><input type="text" value={studentInfo.class} onChange={e => handleInputChange(e, 'class')} className="w-full mt-1 p-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded text-sm dark:text-white" placeholder="Contoh: XI IPA 1" /></div>
+              </div>
+
+              <div className="space-y-6">
+                  <div className="border-l-4 border-blue-500 pl-4">
+                      <h4 className="font-bold text-slate-800 dark:text-white mb-2">A. Tujuan Pembelajaran</h4>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Melalui eksperimen sederhana, peserta didik dapat mengidentifikasi sifat larutan asam dan basa menggunakan indikator alami ekstrak kol ungu dengan tepat.</p>
+                  </div>
+
+                  <div className="border-l-4 border-amber-500 pl-4">
+                      <h4 className="font-bold text-slate-800 dark:text-white mb-2">B. Hasil Pengamatan (Simulasi/Praktik)</h4>
+                      <table className="w-full text-sm text-left border-collapse border border-slate-300 dark:border-slate-600">
+                          <thead className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                              <tr><th className="border border-slate-300 dark:border-slate-600 p-2">Bahan Uji</th><th className="border border-slate-300 dark:border-slate-600 p-2">Warna Awal</th><th className="border border-slate-300 dark:border-slate-600 p-2">Warna + Indikator</th><th className="border border-slate-300 dark:border-slate-600 p-2">Sifat Larutan</th></tr>
+                          </thead>
+                          <tbody>
+                              {['Air Jeruk', 'Air Sabun', 'Larutan Cuka'].map((item, i) => (
+                                  <tr key={i} className="dark:text-slate-300">
+                                      <td className="border border-slate-300 dark:border-slate-600 p-2">{item}</td>
+                                      <td className="border border-slate-300 dark:border-slate-600 p-1"><input type="text" className="w-full bg-transparent p-1" placeholder="..." /></td>
+                                      <td className="border border-slate-300 dark:border-slate-600 p-1"><input type="text" className="w-full bg-transparent p-1" placeholder="..." /></td>
+                                      <td className="border border-slate-300 dark:border-slate-600 p-1"><input type="text" className="w-full bg-transparent p-1" placeholder="..." /></td>
+                                  </tr>
+                              ))}
+                          </tbody>
+                      </table>
+                  </div>
+
+                  <div className="border-l-4 border-purple-500 pl-4">
+                      <h4 className="font-bold text-slate-800 dark:text-white mb-2">C. Kesimpulan</h4>
+                      <textarea className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm min-h-[100px] dark:text-white" placeholder="Tuliskan kesimpulan dari eksperimen/simulasi yang telah dilakukan..."></textarea>
+                  </div>
+              </div>
+
+              <div className="mt-8 text-center">
+                  <button onClick={() => alert("LKPD Disimpan sementara (Simulasi)")} className="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow flex items-center justify-center gap-2 mx-auto">
+                      <IconClipboard/> Simpan Draft LKPD
+                  </button>
+              </div>
+          </div>
+      );
+  };
+
+  const SectionRefleksi = () => (
+      <div className="animate-in fade-in duration-500 max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">Refleksi Pembelajaran</h2>
+              <p className="text-slate-500 dark:text-slate-400">Mari sejenak mengevaluasi proses belajarmu hari ini.</p>
+          </div>
+
+          <div className="space-y-6">
+              {[
+                  { id: 'q1', q: "Apa konsep yang paling kamu pahami dengan baik hari ini?" },
+                  { id: 'q2', q: "Bagian materi mana yang masih terasa membingungkan?" },
+                  { id: 'q3', q: "Bagaimana hubungan materi asam basa ini dengan fenomena yang sering kamu temui sehari-hari?" }
+              ].map((item, i) => (
+                  <div key={i} className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                      <label className="block font-bold text-slate-700 dark:text-slate-300 mb-3">{item.q}</label>
+                      <textarea 
+                          value={reflectionAnswers[item.id] || ''}
+                          onChange={(e) => setReflectionAnswers({...reflectionAnswers, [item.id]: e.target.value})}
+                          className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-sm min-h-[80px] dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all" 
+                          placeholder="Ketik jawabanmu di sini..."
+                      ></textarea>
+                  </div>
+              ))}
+
+              <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm text-center">
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-4">Bagaimana tingkat pemahamanmu secara keseluruhan?</label>
+                  <div className="flex justify-center gap-4 sm:gap-8 flex-wrap">
+                      {[
+                          { emoji: "😄", label: "Sangat Paham", val: 4 },
+                          { emoji: "🙂", label: "Paham", val: 3 },
+                          { emoji: "😐", label: "Cukup Paham", val: 2 },
+                          { emoji: "😕", label: "Masih Bingung", val: 1 }
+                      ].map(em => (
+                          <button 
+                              key={em.val}
+                              onClick={() => setReflectionAnswers({...reflectionAnswers, scale: em.val})}
+                              className={`flex flex-col items-center gap-2 p-3 rounded-2xl transition-all ${reflectionAnswers.scale === em.val ? 'bg-emerald-100 dark:bg-emerald-900/50 scale-110 shadow-md' : 'hover:bg-slate-50 dark:hover:bg-slate-700 grayscale hover:grayscale-0 opacity-50 hover:opacity-100'}`}
+                          >
+                              <span className="text-4xl">{em.emoji}</span>
+                              <span className="text-xs font-bold dark:text-slate-300">{em.label}</span>
+                          </button>
+                      ))}
+                  </div>
+              </div>
+          </div>
+      </div>
+  );
+
+  const SectionHasil = () => {
+      const isComplete = quizScore !== null && evalScore !== null;
+      
+      const printSertifikat = () => {
+          window.print(); // Simple browser print functionality for prototype
+      };
+
+      return (
+          <div className="animate-in fade-in duration-500 max-w-4xl mx-auto space-y-8">
+              {!isComplete && (
+                  <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-center shadow-sm">
+                      ⚠️ Selesaikan Quiz dan Evaluasi terlebih dahulu untuk melihat hasil akhir secara penuh.
+                  </div>
+              )}
+
+              {/* Certificate Template */}
+              <div className="relative bg-white border-[12px] border-double border-emerald-800 p-8 sm:p-12 text-center shadow-2xl printable-area overflow-hidden">
+                  <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
+                  
+                  <img src="https://user37617.na.imgto.link/public/20261005/1001254612.avif" alt="Logo" className="h-20 w-auto mx-auto mb-6" />
+                  
+                  <h1 className="text-3xl sm:text-5xl font-serif text-slate-800 uppercase tracking-widest mb-2">Sertifikat Penilaian</h1>
+                  <p className="text-slate-500 font-medium tracking-widest text-sm mb-8">PEMBELAJARAN KIMIA KELAS XI</p>
+
+                  <p className="text-slate-600 mb-2">Diberikan kepada:</p>
+                  <h2 className="text-3xl font-bold text-emerald-800 border-b border-slate-300 pb-2 inline-block min-w-[250px]">
+                      {studentInfo.name || "Nama Peserta Didik"}
+                  </h2>
+                  <p className="text-slate-600 mt-2">Kelas: {studentInfo.class || "____"}</p>
+
+                  <p className="my-8 text-slate-700 leading-relaxed max-w-2xl mx-auto">
+                      Telah menyelesaikan seluruh rangkaian kegiatan belajar mandiri, eksplorasi, kuis, dan evaluasi pada materi pembelajaran <strong>ASAM BASA (Fase F)</strong> dengan hasil yang tertera di bawah ini.
+                  </p>
+
+                  <div className="flex justify-center gap-6 mb-10">
+                      <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl min-w-[120px]">
+                          <div className="text-xs text-slate-500 font-bold uppercase mb-1">Nilai Quiz</div>
+                          <div className="text-3xl font-black text-slate-800">{quizScore ? quizScore.score : '-'}</div>
+                      </div>
+                      <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl min-w-[120px]">
+                          <div className="text-xs text-slate-500 font-bold uppercase mb-1">Nilai Evaluasi</div>
+                          <div className="text-3xl font-black text-emerald-600">{evalScore ? evalScore.score : '-'}</div>
+                      </div>
+                  </div>
+
+                  <div className="flex justify-between items-end mt-12 px-8">
+                      <div className="text-left">
+                          <p className="text-xs text-slate-500 mb-6">Mengetahui,</p>
+                          <div className="border-b border-slate-400 w-32 mb-1"></div>
+                          <p className="font-bold text-sm text-slate-800">Maid Amir</p>
+                          <p className="text-xs text-slate-500">Guru Mata Pelajaran</p>
+                      </div>
+                      <div className="text-right">
+                          <p className="text-xs text-slate-500 mb-6">Tanggal Penilaian,</p>
+                          <p className="font-bold text-sm text-slate-800">{new Date().toLocaleDateString('id-ID')}</p>
+                          <p className="text-xs text-slate-500">MAN 2 Nganjuk</p>
+                      </div>
+                  </div>
+              </div>
+
+              <div className="text-center print:hidden">
+                  <button onClick={printSertifikat} className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-lg transition-colors flex items-center justify-center gap-2 mx-auto">
+                      <IconPrinter/> Cetak Sertifikat / Simpan PDF
+                  </button>
+                  <style>{`
+                      @media print {
+                          body * { visibility: hidden; }
+                          .printable-area, .printable-area * { visibility: visible; }
+                          .printable-area { position: absolute; left: 0; top: 0; width: 100%; }
+                      }
+                  `}</style>
+              </div>
+          </div>
+      );
+  };
+
+  const SectionAdmin = () => {
+      const [localQuiz, setLocalQuiz] = useState(quizData);
+      
+      const saveToLocal = () => {
+          localStorage.setItem('kimiaQuiz', JSON.stringify(localQuiz));
+          setQuizData(localQuiz);
+          alert("Data Quiz berhasil disimpan ke Local Storage!");
+      };
+
+      const resetData = () => {
+          localStorage.removeItem('kimiaQuiz');
+          localStorage.removeItem('kimiaEval');
+          setLocalQuiz(INITIAL_QUIZ);
+          setQuizData(INITIAL_QUIZ);
+          setEvalData(INITIAL_EVALUASI);
+          alert("Data di-reset ke pengaturan awal.");
+      };
+
+      return (
+          <div className="animate-in fade-in duration-500 max-w-4xl mx-auto space-y-6">
+              <div className="bg-indigo-600 text-white p-6 rounded-2xl flex justify-between items-center shadow-lg">
+                  <div>
+                      <h2 className="text-2xl font-bold flex items-center gap-2"><IconLock/> Admin Dashboard</h2>
+                      <p className="text-indigo-200 text-sm mt-1">Kelola konten aplikasi (Client-side Storage Prototype)</p>
+                  </div>
+              </div>
+
+              <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
+                  <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold dark:text-white">Manajemen Soal Quiz ({localQuiz.length} Soal)</h3>
+                      <button onClick={() => setLocalQuiz([...localQuiz, { id: Date.now(), text: "Soal Baru", options: ["A", "B", "C", "D"], correct: 0, explanation: "", difficulty: "Mudah" }])} className="px-4 py-2 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 rounded-lg text-sm font-bold transition-colors">
+                          + Tambah Soal
+                      </button>
+                  </div>
+
+                  <div className="space-y-4 max-h-[50vh] overflow-y-auto p-2">
+                      {localQuiz.map((q, idx) => (
+                          <div key={q.id} className="border border-slate-200 dark:border-slate-700 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50">
+                              <div className="flex justify-between mb-2">
+                                  <span className="font-bold text-slate-500">Soal {idx + 1}</span>
+                                  <button onClick={() => setLocalQuiz(localQuiz.filter(item => item.id !== q.id))} className="text-red-500 text-sm hover:underline">Hapus</button>
+                              </div>
+                              <textarea value={q.text} onChange={(e) => { const n = [...localQuiz]; n[idx].text = e.target.value; setLocalQuiz(n); }} className="w-full p-2 text-sm border rounded mb-2 dark:bg-slate-800 dark:text-white dark:border-slate-600" rows="2"></textarea>
+                              <div className="grid grid-cols-2 gap-2 mb-2">
+                                  {q.options.map((opt, oIdx) => (
+                                      <div key={oIdx} className="flex gap-2">
+                                          <input type="radio" name={`correct-${q.id}`} checked={q.correct === oIdx} onChange={() => { const n = [...localQuiz]; n[idx].correct = oIdx; setLocalQuiz(n); }} />
+                                          <input type="text" value={opt} onChange={(e) => { const n = [...localQuiz]; n[idx].options[oIdx] = e.target.value; setLocalQuiz(n); }} className="w-full p-1 text-sm border rounded dark:bg-slate-800 dark:text-white dark:border-slate-600" />
+                                      </div>
+                                  ))}
+                              </div>
+                              <input type="text" placeholder="Penjelasan..." value={q.explanation} onChange={(e) => { const n = [...localQuiz]; n[idx].explanation = e.target.value; setLocalQuiz(n); }} className="w-full p-2 text-sm border rounded mt-2 dark:bg-slate-800 dark:text-white dark:border-slate-600" />
+                          </div>
+                      ))}
+                  </div>
+
+                  <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700 flex gap-4">
+                      <button onClick={saveToLocal} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow transition-colors">Simpan Perubahan</button>
+                      <button onClick={resetData} className="px-6 py-2 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-xl font-bold transition-colors">Reset ke Default</button>
+                  </div>
+              </div>
+          </div>
+      );
+  };
+
+  return (
+    <div className={`min-h-screen font-sans antialiased text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 pb-20 sm:pb-0`}>
+      <Header />
+      
+      <div className="max-w-7xl mx-auto flex">
+        <SideNav />
+        
+        <main className="flex-1 p-4 sm:p-8 overflow-hidden min-h-[calc(100vh-4rem)]">
+            {activeTab === 'beranda' && <SectionBeranda />}
+            {activeTab === 'tujuan' && <SectionTujuan />}
+            {activeTab === 'eksplorasi' && <SectionEksplorasi />}
+            {activeTab === 'materi' && <SectionMateri />}
+            {activeTab === 'contoh' && <SectionContoh />}
+            {activeTab === 'praktik' && <SectionPraktik />}
+            {activeTab === 'lkpd' && <SectionLKPD />}
+            {activeTab === 'refleksi' && <SectionRefleksi />}
+            {activeTab === 'quiz' && <AssessmentComponent data={quizData} title="Quiz Interaktif" icon={<IconEdit/>} onComplete={setQuizScore} initialScore={quizScore} />}
+            {activeTab === 'evaluasi' && <AssessmentComponent data={evalData} title="Evaluasi Akhir" icon={<IconBarChart/>} onComplete={setEvalScore} initialScore={evalScore} />}
+            {activeTab === 'hasil' && <SectionHasil />}
+            {activeTab === 'admin' && isAdmin && <SectionAdmin />}
+
+            {/* Render navigation buttons only if not on specific self-contained interactive tabs or admin */}
+            {activeTab !== 'quiz' && activeTab !== 'evaluasi' && activeTab !== 'admin' && <PageNavigation />}
+        </main>
+      </div>
+
+      <BottomNav />
+    </div>
+  );
+}
+
+```
